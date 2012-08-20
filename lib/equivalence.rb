@@ -6,7 +6,8 @@ module Equivalence
 
   def equivalence(*args)
     raise ArgumentError, 'At least one attribute is required.' if args.empty?
-    method_names = args.map { |arg| arg.to_s.sub /^@/, '' }
+    args.map!(&:to_s)
+    method_names = args.map { |arg| arg.sub /^@/, '' }
 
     __define_equivalence_hash_method(args)
     __define_equivalence_attribute_readers(method_names)
@@ -16,7 +17,7 @@ module Equivalence
   def __define_equivalence_hash_method(ivar_or_method_names)
     # Method names might be keywords. We'll want to prefix them with "self"
     ivar_or_method_names = ivar_or_method_names.map do |name|
-      name.to_s[0] == '@' ? name : "self.#{name}"
+      name.start_with?('@') ? name : "self.#{name}"
     end
 
     class_eval <<-EVAL, __FILE__, __LINE__

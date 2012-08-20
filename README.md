@@ -8,25 +8,27 @@ to reuse, though, your code might be leaving your users perplexed.
 
 Consider the following situation:
 
-    class Awesomeness
-      def initialize(level, description)
-        @level = level
-        @description = description
-      end
-    
-      def declare_awesomeness
-        puts "My awesomeness level is #{@level} (#{@description})!"
-      end
-    end
+```ruby
+class Awesomeness
+  def initialize(level, description)
+    @level = level
+    @description = description
+  end
 
-    awesome1 = Awesomeness.new(10, 'really awesome')
-    awesome2 = Awesomeness.new(10, 'really awesome')
-    awesome1.declare_awesomeness
-    # => "My awesomeness level is 10 (really awesome)!"
-    awesome2.declare_awesomeness
-    # => "My awesomeness level is 10 (really awesome)!"
-    [awesome1, awesome2].uniq.size # => 2
-    awesome1 == awesome2           # => false
+  def declare_awesomeness
+    puts "My awesomeness level is #{@level} (#{@description})!"
+  end
+end
+
+awesome1 = Awesomeness.new(10, 'really awesome')
+awesome2 = Awesomeness.new(10, 'really awesome')
+awesome1.declare_awesomeness
+# => "My awesomeness level is 10 (really awesome)!"
+awesome2.declare_awesomeness
+# => "My awesomeness level is 10 (really awesome)!"
+[awesome1, awesome2].uniq.size # => 2
+awesome1 == awesome2           # => false
+```
 
 Surprised? You shouldn't be. Ruby's default implementation of object equality
 considers objects equal only if they are the same object, *not* if they have the
@@ -35,20 +37,22 @@ same contents.
 This probably isn't what you want for your Awesomeness class. To get equality
 behaving as you'd expect, you need to do the following:
 
-    class Awesomeness
-      attr_reader :level, :description
+```ruby
+class Awesomeness
+  attr_reader :level, :description
 
-      def hash
-        [@level, @description].hash
-      end
+  def hash
+    [@level, @description].hash
+  end
 
-      def eql?(other)
-        self.class == other.class &&
-          self.level == other.level &&
-          self.description == other.description
-      end
-      alias :== :eql?
-    end
+  def eql?(other)
+    self.class == other.class &&
+      self.level == other.level &&
+      self.description == other.description
+  end
+  alias :== :eql?
+end
+```
 
 Implementing the `==` method gets your comparison to return true, as expected,
 and implementing `hash` and `eql?` gets `Array#uniq` to behave as expected, and
@@ -80,39 +84,43 @@ Or install it yourself as:
 
 ### Basic
 
+```ruby
     class MySpiffyClass
       extend Equivalence
       equivalence :@my, :@instance, :@variables # , [...]
       # Your spiffy class implementation
     end
+```
 
 You'll get the equality methods we "painstakingly" added above, without all that
 pesky typing. If you don't implement reader methods (as above), Equivalence will
 create some for you, with `protected` access (meaning only other objects within
 MySpiffyClass's class hierarchy will be able to call them), since they're
-necessary for the `eql?` method to work). Defining your own readers? No problem,
+necessary for the `eql?` method to work. Defining your own readers? No problem,
 Equivalence won't mess with them.
 
 Let's re-visit the example from above.
 
-    class Awesomeness
-      extend Equivalence
-      equivalence :@level, :@description
+```ruby
+class Awesomeness
+  extend Equivalence
+  equivalence :@level, :@description
 
-      def initialize(level, description)
-        @level = level
-        @description = description
-      end
-    
-      def declare_awesomeness
-        puts "My awesomeness level is #{@level} (#{@description})!"
-      end
-    end
+  def initialize(level, description)
+    @level = level
+    @description = description
+  end
 
-    awesome1 = Awesomeness.new(10, 'really awesome')
-    awesome2 = Awesomeness.new(10, 'really awesome')
-    [awesome1, awesome2].uniq.size # => 1
-    awesome1 == awesome2           # => true
+  def declare_awesomeness
+    puts "My awesomeness level is #{@level} (#{@description})!"
+  end
+end
+
+awesome1 = Awesomeness.new(10, 'really awesome')
+awesome2 = Awesomeness.new(10, 'really awesome')
+[awesome1, awesome2].uniq.size # => 1
+awesome1 == awesome2           # => true
+```
 
 Less hassle, same result.
 
@@ -125,7 +133,9 @@ case, you'll want your `hash` method to be defined with calls to the methods
 instead of accessing the ivars directly, to get the expected results. Just omit
 the leading @ in each parameter, like so:
 
-    equivalence :level, :description
+```ruby
+equivalence :level, :description
+```
 
 ## Contributing
 

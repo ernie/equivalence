@@ -9,6 +9,7 @@ Gem::Specification.new do |gem|
   gem.homepage      = "http://github.com/ernie/equivalence"
 
   gem.add_development_dependency 'rspec', '~> 2.11.0'
+  gem.add_development_dependency 'rake'
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
