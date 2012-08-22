@@ -20,7 +20,7 @@ module Equivalence
       name.start_with?('@') ? name : "self.#{name}"
     end
 
-    class_eval <<-EVAL, __FILE__, __LINE__
+    class_eval <<-EVAL, __FILE__, __LINE__ + 1
       def hash
         [#{ivar_or_method_names.join(', ')}].hash
       end
@@ -30,7 +30,7 @@ module Equivalence
   def __define_equivalence_attribute_readers(method_names)
     method_names.each do |method|
       unless method_defined?(method)
-        class_eval <<-EVAL, __FILE__, __LINE__
+        class_eval <<-EVAL, __FILE__, __LINE__ + 1
           attr_reader :#{method} unless private_method_defined?(:#{method})
           protected   :#{method}
         EVAL
@@ -39,7 +39,7 @@ module Equivalence
   end
 
   def __define_equivalence_equality_methods(method_names)
-    class_eval <<-EVAL, __FILE__, __LINE__
+    class_eval <<-EVAL, __FILE__, __LINE__ + 1
       def eql?(other)
         self.class == other.class &&
           #{method_names.map {|m| "self.#{m} == other.#{m}"}.join(" &&\n")}
